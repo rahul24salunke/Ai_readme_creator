@@ -1,111 +1,141 @@
-# aireadme
+# aireadme – Automated README Generator (CLI)
+
+---
 
 ## Description
-`aireadme` is a Node‑JS command‑line utility that automatically generates a production‑ready `README.md` for JavaScript or TypeScript projects. By analysing the source files, chunking the content to respect LLM size limits, and orchestrating a series of summarisation steps through the OpenRouter API, the tool produces a comprehensive, well‑structured README without manual effort.
+`aireadme` is a Node.js command‑line tool that automatically creates a production‑ready `README.md` for any project. It scans the project directory, chunks source files into size‑limited pieces, sends each chunk to the OpenRouter LLM for summarisation, merges the summaries, and finally generates a complete markdown README.  
+
+- **Purpose**: Reduce the manual effort of writing comprehensive READMEs.  
+- **Target audience**: Developers who want consistent documentation without spending time on formatting.  
+- **Problem solved**: Eliminates repetitive, error‑prone README authoring and ensures documentation stays in sync with the codebase.
+
+---
 
 ## Features
-- **Automatic file discovery** – Recursively walks the project tree while ignoring common noise directories and file types.  
-- **Chunking for LLM safety** – Splits source content into configurable text blocks (default ≤ 3000 characters) to stay within model limits.  
-- **AI‑driven pipeline** – Summarises each chunk, merges summaries into a project overview, and generates the final markdown using OpenRouter’s `openai/gpt-oss-120b` model.  
-- **Configuration management** – Stores the OpenRouter API key in `~/.aireadme.json` with a fallback to the `OPENROUTER_API_KEY` environment variable.  
-- **CLI commands** – `generate` to create the README, `config` to manage the API key, and diagnostic helpers.  
-- **Progress logging** – Clear console output for long‑running operations and user‑friendly error handling.  
+- Recursive project file discovery with configurable ignore rules.  
+- Automatic chunking of files to stay within LLM token limits.  
+- Summarisation of each chunk via OpenRouter (model `openai/gpt-oss-120b`).  
+- Merging of individual summaries into a single technical overview.  
+- Generation of a complete, production‑ready `README.md` in markdown format.  
+- Local configuration management for the OpenRouter API key (`~/.aireadme.json`).  
+- CLI commands for generation and configuration (`generate`, `config set-key`, `config delete`, `config doctor`).  
+
+---
 
 ## Tech Stack
-| Category | Technology |
-|----------|------------|
-| Runtime | Node.js (ESM, `"type": "module"`), shebang for direct execution |
-| CLI parsing | `yargs` |
-| HTTP client | `axios` |
-| AI service | OpenRouter (`https://openrouter.ai/api/v1/chat/completions`) |
-| File system | Node core modules `fs`, `path`, `os` |
-| Packaging | npm (binary entry point `bin: { "aireadme": "./src/index.js" }`) |
+- **Runtime**: Node.js (ESM)  
+- **CLI**: `yargs`  
+- **HTTP client**: `axios`  
+- **File system**: Native `fs`, `path`, `os` modules  
+- **LLM provider**: OpenRouter (`openai/gpt-oss-120b`)  
+- **Configuration storage**: JSON file in the user’s home directory  
+
+---
 
 ## Installation
-```bash
-# Install globally
-npm install -g aireadme
 
-# Or install locally in a project
-npm install --save-dev aireadme
+### Prerequisites
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Steps
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/aireadme.git
+cd aireadme
+
+# Install dependencies
+npm install
 ```
+
+---
 
 ## Usage
-### 1. Configure the OpenRouter API key (once)
-```bash
-# Store the key in the user config file
-aireadme config set-key <YOUR_OPENROUTER_API_KEY>
 
-# Verify configuration
-aireadme config doctor
+### Set the OpenRouter API key (once)
+```bash
+aireadme config set-key YOUR_OPENROUTER_API_KEY
 ```
 
-### 2. Generate a README for the current project
+### Generate a README for the current project
 ```bash
-# Run from the root of the target repository
 aireadme generate
 ```
-The command will:
-1. Verify that an API key is available.  
-2. Discover source files under the current directory.  
-3. Create size‑limited text chunks.  
-4. Summarise each chunk, merge the summaries, and produce the final `README.md`.  
-5. Prompt before overwriting an existing `README.md` and write the result to the project root.
+The command creates (or overwrites) `README.md` in the current working directory.
 
-### 3. Additional configuration commands
-| Command | Description |
-|---------|-------------|
-| `aireadme config set-key <value>` | Save a new API key. |
-| `aireadme config delete` | Remove the stored configuration file. |
-| `aireadme config doctor` | Show whether a key is present and display a short preview of the configuration. |
+### Additional CLI commands
+```bash
+# Show whether a key is configured
+aireadme config doctor
 
-## API Endpoints
-`aireadme` does not expose its own HTTP API. All external calls are made internally to the OpenRouter chat‑completion endpoint.
+# Remove stored configuration
+aireadme config delete
+```
+
+---
 
 ## Project Structure
 ```
 aireadme/
 ├─ src/
-│  ├─ commands/
-│  │  ├─ generate.js      # implementation of the `generate` command
-│  │  └─ config.js        # implementation of the `config` sub‑commands
-│  ├─ config.js           # read/write of ~/.aireadme.json and API‑key helpers
-│  ├─ fileReader.js       # recursive project file discovery
-│  ├─ chunker.js          # creation of LLM‑safe text chunks
-│  ├─ openrouter.js       # low‑level wrapper around OpenRouter API
-│  ├─ generateReadme.js   # orchestration of summarisation → merge → final README
-│  └─ index.js            # CLI entry point (yargs registration)
+│  ├─ index.js            # CLI definition (yargs)
+│  ├─ fileReader.js       # Recursively reads project files
+│  ├─ chunker.js          # Splits files into ≤3000‑char chunks
+│  ├─ config.js           # Handles API‑key persistence
+│  ├─ openrouter.js       # Wrapper around OpenRouter chat endpoint
+│  └─ generateReadme.js   # Orchestrates the generation pipeline
 ├─ package.json
-├─ README.md               # this file
+├─ README.md               # This file
 └─ .gitignore
 ```
+- **index.js**: Entry point; parses commands and dispatches actions.  
+- **fileReader.js**: Returns an array of `{ path, content }` for all relevant source files.  
+- **chunker.js**: Produces LLM‑safe text chunks.  
+- **config.js**: Reads/writes `~/.aireadme.json` and falls back to `process.env.OPENROUTER_API_KEY`.  
+- **openrouter.js**: Sends prompts for summarisation, merging, and final README generation.  
+- **generateReadme.js**: Executes the full pipeline and writes `README.md`.
+
+---
 
 ## How It Works
-1. **Configuration Check** – `config.hasApiKey()` ensures an OpenRouter key is available.  
-2. **File Discovery** – `readProjectFiles(baseDir)` walks the directory tree, skips ignored paths (`node_modules`, `.git`, etc.), and returns an array of `{ path, content }`.  
-3. **Chunk Creation** – `chunkFiles(files)` builds blocks prefixed with `FILE: <path>` and groups them into strings ≤ 3000 characters. Oversized blocks are split automatically.  
-4. **AI Pipeline** (`generateREADMEFromChunks`)  
-   - **Summarise** each chunk via `summarizeChunk(chunk)`.  
-   - **Merge** all summaries into a single project overview with `mergeSummaries(summaries)`.  
-   - **Generate** the final markdown using `generateFinalReadme(overview)`.  
-5. **Output** – The resulting markdown is written to `README.md` in the current working directory.  
-6. **Error Handling** – All asynchronous steps are wrapped in `try/catch`. Network or validation errors from OpenRouter are logged with the full response payload before being re‑thrown, and the CLI exits with a non‑zero status code.
+1. **API‑key verification** – `config.hasApiKey()` ensures a key is available.  
+2. **File collection** – `readProjectFiles(process.cwd())` gathers all text files ≤ 200 KB, ignoring typical binary or build artifacts.  
+3. **Chunking** – `chunkFiles(files)` creates an array of strings, each ≤ 3 000 characters, prefixed with the file path.  
+4. **Per‑chunk summarisation** – `summarizeChunk(chunk)` calls OpenRouter to obtain a concise description of the code segment.  
+5. **Merging** – `mergeSummaries(summaries)` produces a single technical overview from all chunk summaries.  
+6. **README generation** – `generateReadmeFromSummary(merged)` asks the LLM to format the overview into a full markdown README.  
+7. **Write output** – The resulting markdown is saved as `README.md` in the project root.
+
+Progress is logged to the console with simple emojis for visual feedback.
+
+---
 
 ## Configuration
-- **Location**: `~/.aireadme.json` (JSON file with a single `apiKey` property).  
-- **Environment fallback**: `OPENROUTER_API_KEY`.  
-- **Key management**: Use the `aireadme config` sub‑commands to set, delete, or inspect the stored key.  
-- **Chunk size**: Currently fixed at 3000 characters; can be exposed via a future CLI flag or configuration entry.  
+The tool looks for the OpenRouter API key in two places:
+
+1. Environment variable `OPENROUTER_API_KEY`.  
+2. Local JSON file `~/.aireadme.json`:
+
+```json
+{
+  "OPENROUTER_API_KEY": "your_key_here"
+}
+```
+
+CLI helpers (`config set-key`, `config delete`, `config doctor`) manage this file.
+
+---
 
 ## Contributing
 Contributions are welcome. Please follow these steps:
 
-1. Fork the repository and create a feature branch.  
-2. Ensure code follows the existing ES module style and uses only the declared dependencies (`axios`, `yargs`).  
-3. Run the test suite (if added) and linting tools before submitting a pull request.  
-4. Provide a clear description of the change and reference any related issues.  
+1. Fork the repository.  
+2. Create a feature branch (`git checkout -b feature/your-feature`).  
+3. Ensure code follows existing style and passes linting (`npm run lint`).  
+4. Write or update tests as appropriate.  
+5. Submit a pull request with a clear description of changes.
 
-All contributions will be reviewed for correctness, security (especially around API key handling), and adherence to the project's coding standards.
+---
 
 ## License
-`aireadme` is released under the MIT License. See the `LICENSE` file for full terms.
+This project is licensed under the MIT License.

@@ -112,27 +112,148 @@ async function generateFinalReadme(summary) {
 You are a senior software engineer and technical writer.
 Generate a COMPLETE production-quality README.md.
 
-STRICT RULES:
-- Return ONLY markdown.
-- No explanations outside README.
-- No hallucination.
-- Professional tone.
-- No emojis.
+OUTPUT REQUIREMENTS:
 
-Structure:
+Return ONLY valid markdown.
+Do NOT include explanations outside the README.
+Do NOT include phrases like "based on the provided code".
+Do NOT hallucinate features that do not exist.
+Be precise, professional, and structured.
+also explain the routes and their purpose if it's a web server project.
+
+
+README STRUCTURE:
+Generate README.md with EXACTLY these sections:
 
 # Project Title
+Generate a clear and meaningful project name based on code.
+
+---
+
 # Description
+Write a concise and professional description explaining:
+
+- What the project does
+- Why it exists
+- Who it is for
+- What problem it solves
+
+---
+
 # Features
+Provide a bullet list of key features.
+Focus on actual capabilities visible in code.
+---
+
 # Tech Stack
+
+List technologies used, such as:
+
+- Language
+- Framework
+- Libraries
+- Tools
+- APIs
+
+---
+
 # Installation
+Provide step-by-step installation instructions.
+
+Include:
+
+- prerequisites
+- npm install
+- environment setup if needed
+
+Example:
+
+\`\`\`bash
+npm install
+\`\`\`
+
+---
+
 # Usage
-# API Endpoints (if applicable)
+Explain how to run and use the project.
+Include CLI commands, examples, or code usage if applicable.
+
+Example:
+
+\`\`\`bash
+aireadme generate
+\`\`\`
+
+---
+
 # Project Structure
+
+Provide a tree view of important folders and files.
+
+Example:
+
+\`\`\`
+project/
+├── index.js
+├── src/
+└── package.json
+\`\`\`
+
+Explain key files briefly.
+
+---
+
 # How It Works
+
+Explain internal architecture briefly:
+
+- flow
+- modules
+- AI integration if present
+- processing pipeline
+
+---
+
 # Configuration
+
+Explain environment variables if present.
+
+Example:
+
+\`\`\`
+OPENROUTER_API_KEY=your_key
+\`\`\`
+
+---
+
 # Contributing
+Provide standard contributing guidance.
+
+---
+
 # License
+If license file or package.json license exists, mention it.
+Otherwise write:
+This project is licensed under the ISC License.
+
+---
+
+STYLE REQUIREMENTS:
+
+- Professional
+- Clean
+- Concise
+- No emojis
+- No fluff
+- No repetition
+- No marketing language
+- Developer-focused
+
+---
+IMPORTANT:
+You are generating README.md for a real production for current working directory.
+Return ONLY markdown.
+END OF INSTRUCTIONS.
 `;
 
   return await callOpenRouter([
