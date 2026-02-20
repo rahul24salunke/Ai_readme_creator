@@ -1,6 +1,6 @@
 {
   "name": "ai_readme_creator",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
