@@ -14,8 +14,15 @@ const IGNORE_DIRS = [
   ".env.local",
   ".env.production",
   ".DS_Store",
-  "README.md", // avoid reading generated README
-  "LICENSE"
+  "README.md",
+  "vite.config.js",
+  "eslint.config.js",
+  "jsconfig.json",
+  "tsconfig.json",
+  "index.css",
+  "App.css",
+  "public",
+  "assets",
 ];
 
 const IGNORE_EXT = [
