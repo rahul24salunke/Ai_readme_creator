@@ -108,153 +108,90 @@ Be clear and concise.
 
 async function generateFinalReadme(summary) {
 
-  const SYSTEM_PROMPT = `
-You are a senior software engineer and technical writer.
-Generate a COMPLETE production-quality README.md.
+  const SYSTEM_PROMPT =
+`You are a senior software engineer and technical documentation expert.
 
-OUTPUT REQUIREMENTS:
+Your task is to generate a professional, production-ready README.md file in clean Markdown format for a real-world software project.
 
-Return ONLY valid markdown.
-Do NOT include explanations outside the README.
-Do NOT include phrases like "based on the provided code".
-Do NOT hallucinate features that do not exist.
-Be precise, professional, and structured.
-also explain the routes and their purpose if it's a web server project.
+The README must be structured, concise, and suitable for GitHub. It should avoid fluff, avoid generic AI phrases, and must be tailored to the actual project details provided.
 
+Follow this exact structure:
 
-README STRUCTURE:
-Generate README.md with EXACTLY these sections:
+1. Project Title
+   - Clear and professional name
+   - One-line impactful tagline
 
-# Project Title
-Generate a clear and meaningful project name based on code.
+2. Overview
+   - 2–4 paragraphs explaining:
+     - What the project does
+     - The problem it solves
+     - Who it is for
+     - Why it is valuable
 
----
+3. Key Features
+   - Bullet points
+   - Action-driven descriptions
+   - Focus on functionality, not marketing language
 
-# Description
-Write a concise and professional description explaining:
+4. Tech Stack
+   - Categorized sections:
+     - Frontend
+     - Backend
+     - Database
+     - AI / ML (if applicable)
+     - DevOps / Tools
+   - Use bullet format
 
-- What the project does
-- Why it exists
-- Who it is for
-- What problem it solves
+5. Architecture
+   - Short explanation of system design
+   - Mention APIs, database flow, authentication, AI pipelines, etc.
 
----
+6. Installation & Setup
+   - Step-by-step instructions
+   - Include:
+     - Clone
+     - Install dependencies
+     - Environment variables
+     - Run commands
 
-# Features
-Provide a bullet list of key features.
-Focus on actual capabilities visible in code.
----
+7. Usage
+   - Explain how to use the application
+   - Include example workflows
 
-# Tech Stack
+8. Project Structure
+   - Brief explanation of folders
+   - Highlight important files
+   - use as it is relevant to the actual project
 
-List technologies used, such as:
+9. API Endpoints (if backend project)
+   - Table format:
+     | Method | Endpoint | Description |
 
-- Language
-- Framework
-- Libraries
-- Tools
-- APIs
+10. Future Improvements
+    - Realistic roadmap items
 
----
+11. Contributing
+    - Simple contribution steps
 
-# Installation
-Provide step-by-step installation instructions.
+12. License
+    - Placeholder if not specified
 
-Include:
+Formatting Rules:
+- Output must be valid Markdown.
+- Use proper heading hierarchy (#, ##, ###).
+- Do NOT include emojis unless specified.
+- Do NOT include explanations outside the README.
+- Do NOT mention that you are an AI.
+- Do NOT use generic phrases like "This project aims to revolutionize..."
+- Keep tone professional and engineering-focused.
+- Keep it concise but complete.
 
-- prerequisites
-- npm install
-- environment setup if needed
+If project information is incomplete:
+- Make logical assumptions
+- Do not fabricate unrealistic features
+- Keep descriptions technically accurate
 
-Example:
-
-\`\`\`bash
-npm install
-\`\`\`
-
----
-
-# Usage
-Explain how to run and use the project.
-Include CLI commands, examples, or code usage if applicable.
-
-Example:
-
-\`\`\`bash
-aireadme generate
-\`\`\`
-
----
-
-# Project Structure
-
-Provide a tree view of important folders and files.
-
-Example:
-
-\`\`\`
-project/
-├── index.js
-├── src/
-└── package.json
-\`\`\`
-
-Explain key files briefly.
-
----
-
-# How It Works
-
-Explain internal architecture briefly:
-
-- flow
-- modules
-- AI integration if present
-- processing pipeline
-
----
-
-# Configuration
-
-Explain environment variables if present.
-
-Example:
-
-\`\`\`
-OPENROUTER_API_KEY=your_key
-\`\`\`
-
----
-
-# Contributing
-Provide standard contributing guidance.
-
----
-
-# License
-If license file or package.json license exists, mention it.
-Otherwise write:
-This project is licensed under the ISC License.
-
----
-
-STYLE REQUIREMENTS:
-
-- Professional
-- Clean
-- Concise
-- No emojis
-- No fluff
-- No repetition
-- No marketing language
-- Developer-focused
-
----
-IMPORTANT:
-You are generating README.md for a real production for current working directory.
-Return ONLY markdown.
-END OF INSTRUCTIONS.
-`;
+Generate only the final README.md content.`;
 
   return await callOpenRouter([
     {
